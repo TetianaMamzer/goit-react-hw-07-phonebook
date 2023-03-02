@@ -1,38 +1,54 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { nanoid } from "nanoid";
+import * as actions from './contacts-action'
+
+const initialState = {
+  items: [],
+  loading: false,
+  error: null,
+}
 
 const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: [],
-  reducers: {
-    addContact: {
-      reducer: (state, {payload}) => {
-        state.push(payload);
-      },
-      prepare: data => {
-        return {
-          payload: {
-           id: nanoid(),
-           ...data,
-          }
-        }
-      }
+  initialState,
+  extraReducers: {
+    [actions.fetchContactsLoading]: (store) => {
+      store.loading = true;
     },
-    deleteContact: (state, {payload}) => state.filter(item => item.id !== payload),
+    [actions.fetchContactsSuccess]: (store, action) => {
+      store.loading = false;
+      store.items = action.payload;
+    },
+    [actions.fetchContactsError]: (store, action) => {
+      store.loading = false;
+      store.error = action.payload;
+    },
 
+    [actions.fetchAddContactsLoading]: (store) => {
+      store.loading = true;
+    },
+    [actions.fetchAddContactsSuccess]: (store, action) => {
+      store.loading = false;
+      store.items.push(action.payload);
+    },
+    [actions.fetchAddContactsError]: (store, action) => {
+      store.loading = false;
+      store.error = action.payload;
+    },
+
+    [actions.fetchDeleteContactsLoading]: (store) => {
+      store.loading = true;
+    },
+    [actions.fetchDeleteContactsSuccess]: (store, action) => {
+      store.loading = false;
+      const index = store.items.findIndex(item => item.id === action.payload);
+      store.items.splice(index, 1);
+    },
+    [actions.fetchDeleteContactsError]: (store, action) => {
+      store.loading = false;
+      store.error = action.payload;
+    }
   }
 })
 
 export const {addContact, deleteContact} = contactsSlice.actions;
 export default contactsSlice.reducer;
-// -------другий варіант----------
-// import { createReducer } from "@reduxjs/toolkit";
-// import { addContact, deleteContact } from "./contacts-actions";
-// import { createSlice } from "@reduxjs/toolkit";
-
-// const contactsReducer = createReducer([], {
-//   [addContact]: (state, action) => [...state, action.payload],
-//   [deleteContact]: (state, action) => state.filter(item => item.id !== action.payload),
-// })
-
-// export default contactsReducer;

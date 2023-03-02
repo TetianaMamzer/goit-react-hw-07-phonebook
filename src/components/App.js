@@ -1,4 +1,4 @@
-// import {  useEffect } from 'react';
+import {  useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import '../index.css';
 
@@ -7,7 +7,8 @@ import Form from './phoneBook/Form';
 import PhoneBookList from './phoneBook/PhoneBookList';
 import Filter from './phoneBook/Filter';
 
-import { addContact, deleteContact } from 'redux/contacts/contatcs-slice'; 
+import { fetchContacts, fetchAddContact, fetchDeleteContact } from 'redux/contacts/contacts-operations';
+// import { addContact, deleteContact } from 'redux/contacts/contatcs-slice'; 
 import { getFilterContacts } from 'redux/contacts/contacts-selectors';
 
 import { getFilter } from 'redux/filter/filter-selectors'; 
@@ -39,10 +40,14 @@ Notiflix.Notify.init({
 });
 
 export default function PhoneBook() {
-  const contacts = useSelector(store => store.contacts);
+  const contacts = useSelector(store => store.contacts.items);
   const visibleContacts = useSelector(getFilterContacts);
   const filter = useSelector(getFilter);
   const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const onAddContact = ({name, number}) => {
         for (let i = 0; i < contacts.length; i++) {
@@ -50,20 +55,15 @@ export default function PhoneBook() {
         return Notiflix.Notify.failure(`${name} is olredy in contacts`);
       }
     }
-
-    const action = addContact({name, number});
-    dispatch(action);
+    dispatch(fetchAddContact({name, number}));
   }
 
   const onDeleteContact = (id) => {
-    const action = deleteContact(id);
-    dispatch(action);
+    dispatch(fetchDeleteContact(id));
   }
 
 
-  // useEffect(() => {
-  //   localStorage.setItem('phoneBook', JSON.stringify(contacts));
-  // }, [contacts]);
+
 
   return (
       <Conteiner title="Phonebook">

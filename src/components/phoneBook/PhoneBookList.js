@@ -6,6 +6,7 @@ import css from '../PhoneBook.module.css';
 const PhoneBookList = ({ contacts, type, text, onClick }) => {
 
   const elements = contacts.map(({name, number, id}) =>  <li key={id} className={css.list}>
+   
   {name}: {number} <button type={type} onClick={() => onClick(id)} className={css.button}>{text}</button>
 </li>)
   return (
